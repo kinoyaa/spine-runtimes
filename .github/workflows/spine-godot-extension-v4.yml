@@ -141,12 +141,20 @@ jobs:
       - name: Setup Android SDK & NDK
         uses: android-actions/setup-android@v2
   
-      - name: Install specific NDK version
+      - name: Install NDK
         run: |
           yes | sudo ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --licenses
-          ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --install "ndk;28.1.13356703"
-          # 如果上面的版本不存在，尝试其他 28.1.x 版本
-          # ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --install "ndk;28.1.13356709"
+          
+          # 列出所有可用的 NDK 版本
+          echo "=== 可用的 NDK 版本 ==="
+          ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --list | grep "ndk;" | head -20
+          
+          # 尝试安装较新的 NDK 版本
+          echo "=== 尝试安装 NDK 版本 ==="
+          ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --install "ndk;25.2.9519653" ||
+          ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --install "ndk;24.0.8215888" ||
+          ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --install "ndk;23.2.8568313" ||
+          ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --install "ndk;21.4.7075529"
   
       - name: Setup python and scons
         uses: ./.github/actions/setup-godot-deps-4
